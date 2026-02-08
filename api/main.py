@@ -32,11 +32,19 @@ from rfp.structure import list_templates
 # =============================================================================
 # Configuration
 # =============================================================================
+# On Vercel (and similar serverless), filesystem is read-only except /tmp
+if os.environ.get("VERCEL") == "1":
+    UPLOAD_DIR = Path("/tmp") / "kplw_uploads"
+    OUTPUT_DIR = Path("/tmp") / "kplw_outputs"
+else:
+    UPLOAD_DIR = Path("uploads")
+    OUTPUT_DIR = Path("outputs")
 
-UPLOAD_DIR = Path("uploads")
-OUTPUT_DIR = Path("outputs")
-UPLOAD_DIR.mkdir(exist_ok=True)
-OUTPUT_DIR.mkdir(exist_ok=True)
+try:
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass  # read-only FS; dirs created on first use or use /tmp above
 
 # Job storage (in production, use Redis or database)
 jobs = {}
