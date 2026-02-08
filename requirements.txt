@@ -1,0 +1,61 @@
+# KPLW Strategic Innovations - Dependencies v2.1
+# ===============================================
+# Installation: pip install -r requirements.txt
+
+# ═══════════════════════════════════════════
+# PHASE 1: Multi-Provider LLM + Document Parsing
+# ═══════════════════════════════════════════
+
+# LLM Providers
+anthropic>=0.40.0                # Anthropic Claude API (primary)
+openai>=1.6.0                    # OpenAI GPT-4, GPT-4V
+requests>=2.31.0                 # For Ollama local models
+
+# Document Processing
+PyMuPDF>=1.23.0                  # PDF parsing (better than PyPDF2)
+python-docx>=1.1.0               # DOCX parsing (already included)
+Pillow>=10.1.0                   # Image handling for vision
+
+# Orchestration
+langgraph>=0.2.0                 # Multi-agent orchestration
+
+# Configuration
+python-dotenv>=1.0.0             # Environment variables
+
+# CLI/Display
+rich>=13.0.0                     # Rich terminal output
+
+# ═══════════════════════════════════════════
+# PHASE 2: RFP-Specific Logic
+# ═══════════════════════════════════════════
+# (No additional dependencies - uses existing libraries)
+
+# ═══════════════════════════════════════════
+# PHASE 3: Output Generation (DOCX/PDF)
+# ═══════════════════════════════════════════
+
+# DOCX generation (python-docx already included above for parsing)
+
+# PDF generation
+docx2pdf>=0.1.8                  # DOCX to PDF conversion (default method)
+
+# Alternative PDF methods (optional, install if needed):
+# pypandoc                       # Requires: brew install pandoc (macOS)
+# Or use system LibreOffice:     # brew install libreoffice (macOS)
+
+# ═══════════════════════════════════════════
+# PHASE 4: Web UI & API
+# ═══════════════════════════════════════════
+
+fastapi>=0.109.0                 # REST API framework
+uvicorn[standard]>=0.27.0        # ASGI server
+python-multipart>=0.0.6          # File upload support
+websockets>=12.0                 # WebSocket for real-time updates
+
+# ═══════════════════════════════════════════
+# FUTURE PHASES (commented out, install as needed)
+# ═══════════════════════════════════════════
+
+# Phase 5: Testing
+# pytest>=8.0.0                  # Testing framework
+# pytest-asyncio>=0.23.0         # Async test support

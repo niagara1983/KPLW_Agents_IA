@@ -1,0 +1,108 @@
+# KPLW RFP System - Docker Compose Configuration
+# Complete multi-container deployment
+
+version: '3.8'
+
+services:
+  # Main API service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kplw-rfp-api
+    ports:
+      - "8000:8000"
+    environment:
+      # LLM Provider Configuration
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - DEFAULT_PROVIDER=${DEFAULT_PROVIDER:-anthropic}
+
+      # Model Configuration
+      - VISION_ENABLED=${VISION_ENABLED:-true}
+      - SIMULATION_MODE=${SIMULATION_MODE:-false}
+
+      # Budget Configuration
+      - BUDGET_LIMIT_USD=${BUDGET_LIMIT_USD:-100.0}
+
+      # Quality Configuration
+      - QUALITY_THRESHOLD=${QUALITY_THRESHOLD:-80}
+      - MAX_ITERATIONS=${MAX_ITERATIONS:-3}
+
+      # Logging
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      # Persist uploads and outputs
+      - ./uploads:/app/uploads
+      - ./outputs:/app/outputs
+      - ./logs:/app/logs
+
+      # Development: mount source code for hot reload
+      - ./api:/app/api
+      - ./web:/app/web
+      - ./agents.py:/app/agents.py
+      - ./agents_rfp.py:/app/agents_rfp.py
+      - ./rfp:/app/rfp
+      - ./llm:/app/llm
+      - ./document:/app/document
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - kplw-network
+
+  # Optional: Ollama for local LLM (if not using cloud providers)
+  # Uncomment to use local models
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   container_name: kplw-ollama
+  #   ports:
+  #     - "11434:11434"
+  #   volumes:
+  #     - ollama-data:/root/.ollama
+  #   restart: unless-stopped
+  #   networks:
+  #     - kplw-network
+
+  # Optional: Redis for job queue and caching (production use)
+  # Uncomment for production deployment
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: kplw-redis
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis-data:/data
+  #   restart: unless-stopped
+  #   networks:
+  #     - kplw-network
+
+  # Optional: PostgreSQL for persistent storage (production use)
+  # Uncomment for production deployment
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: kplw-postgres
+  #   environment:
+  #     - POSTGRES_USER=kplw
+  #     - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+  #     - POSTGRES_DB=kplw_rfp
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #   restart: unless-stopped
+  #   networks:
+  #     - kplw-network
+
+networks:
+  kplw-network:
+    driver: bridge
+
+volumes:
+  ollama-data:
+  redis-data:
+  postgres-data:

@@ -1,0 +1,31 @@
+prompts.py.old
+
+# Environment and secrets
+.env
+.env.local
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Outputs and uploads (user data)
+outputs/
+uploads/
+costs_history.json
+
+# OS
+.DS_Store
+Thumbs.db
